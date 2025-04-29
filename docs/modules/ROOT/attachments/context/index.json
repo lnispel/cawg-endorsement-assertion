@@ -1,0 +1,28 @@
+{
+  "@context": {
+    "@protected": true,
+    "cawg":  "https://cawg.io/identity#",
+    "schema":"https://schema.org/",
+    "xsd":   "http://www.w3.org/2001/XMLSchema#",
+
+    "c2paAsset":          "cawg:c2paAsset",
+    "manifestHash":       "cawg:manifestHash",
+    "manifestAlg":        "cawg:manifestAlg",
+    "manifestUrl":        "@id",
+
+    "endorsement":        "cawg:endorsement",
+    "endorsedActions":    "cawg:endorsedActions",
+    "constraints":        "cawg:constraints",
+
+    "endorser": {
+      "@id": "cawg:endorser",
+      "@container": "@set"
+    },
+    "endorsee": {
+      "@id": "cawg:endorsee",
+      "@container": "@set"
+    },
+    "role":   "schema:roleName",
+    "name":   "schema:name"
+  }
+}

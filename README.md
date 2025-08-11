@@ -1,6 +1,6 @@
-# Creator Assertions Working Group :: Endorsement Assertion
+# Creator Assertions Working Group :: Forward Permissions Credential
 
-This repository contains the source material for the current working draft of the [Creator Assertions Working Group](https://cawg.io/)'s endorsement assertion. A rendered version of this specification can be found [here](https://cawg.io/endorsement/).
+This repository contains the source material for the current working draft of the [Creator Assertions Working Group](https://cawg.io/)'s Forward Permissions Credential (FPC). A rendered version of this specification can be found [here](https://cawg.io/forward-permissions/).
 
 ## Governance
 

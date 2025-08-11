@@ -1,4 +1,4 @@
-name: endorsement
-version: 1.0-draft
-title: Endorsement Assertion
+name: forward-permissions
+version: 2.0-draft
+title: Forward Permissions Credential
 start_page: index.adoc

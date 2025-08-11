@@ -1,0 +1,247 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://schema.org",
+    "https://cawg.io/contexts/forward-permissions/v2",
+    "https://www.w3.org/ns/odrl/2/"
+  ],
+  "type": ["VerifiablePresentation", "ForwardPermissionsPresentation"],
+  "holder": "did:key:zDemoLicenseeKey",
+  "verifiableCredential": [
+    {
+      "@context": [
+        "https://www.w3.org/ns/credentials/v2",
+        "https://schema.org",
+        "https://cawg.io/contexts/forward-permissions/v2",
+        "https://www.w3.org/ns/odrl/2/"
+      ],
+      "type": ["VerifiableCredential", "ForwardPermissionsCredential"],
+      "issuer": {
+        "id": "did:web:originvault.io",
+        "name": "OriginVault",
+        "@type": "Organization",
+        "description": "Digital content verification and permission management platform"
+      },
+      "validFrom": "2025-08-25T00:00:00Z",
+      "validUntil": "2026-08-25T00:00:00Z",
+      "credentialSubject": {
+        "id": "did:key:zDemoLicenseeKey",
+        "@type": "Person",
+        "name": "Jane Creator",
+        "description": "Content creator receiving forward permissions",
+        "termsOfUse": {
+          "type": "C2PAAssetBinding",
+          "referenced_assertions": [
+            {
+              "url": "self#jumbf=c2pa/urn:uuid:F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4/c2pa.assertions/c2pa.hash.data",
+              "hash": "U9Gyz05tmpftkoEYP6XYNsMnUbnS/KcktAg2vv7n1n8=",
+              "alg": "sha256"
+            }
+          ],
+          "role": ["cawg.creator"],
+          "permittedActions": [
+            "c2pa.transcoded",
+            "c2pa.repackaged"
+          ],
+          "odrlPolicy": {
+            "@context": "https://www.w3.org/ns/odrl/2/",
+            "uid": "urn:uuid:perm-123",
+            "type": "Offer",
+            "permission": [
+              {
+                "target": "did:key:zDemoLicenseeKey",
+                "action": {
+                  "type": "odrl:use"
+                },
+                "constraint": [
+                  {
+                    "leftOperand": "odrl:dateTime",
+                    "operator": "odrl:lteq",
+                    "rightOperand": "2026-08-25T00:00:00Z"
+                  },
+                  {
+                    "leftOperand": "odrl:territory",
+                    "operator": "odrl:eq",
+                    "rightOperand": "US"
+                  }
+                ]
+              }
+            ],
+            "obligation": [
+              {
+                "target": "did:key:zDemoLicenseeKey",
+                "action": {
+                  "type": "odrl:attribute"
+                },
+                "constraint": [
+                  {
+                    "leftOperand": "odrl:attribution",
+                    "operator": "odrl:eq",
+                    "rightOperand": "OriginVault"
+                  }
+                ]
+              }
+            ]
+          },
+          "issuerIdentity": {
+            "icacReference": "https://cawg.io/credentials/icac/creator",
+            "icacHash": "sha256-xyz789",
+            "minimalClaims": [
+              {
+                "claimType": "verifiedPublisher",
+                "claimValue": "true",
+                "issuer": "https://trusted-issuer.com"
+              },
+              {
+                "claimType": "kycLevel",
+                "claimValue": "enhanced",
+                "issuer": "https://kyc-provider.com"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "termsOfUse": {
+    "type": "C2PAAssetBinding",
+    "referenced_assertions": [
+      {
+        "url": "self#jumbf=c2pa/urn:uuid:F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4/c2pa.assertions/c2pa.hash.data",
+        "hash": "U9Gyz05tmpftkoEYP6XYNsMnUbnS/KcktAg2vv7n1n8=",
+        "alg": "sha256"
+      },
+      {
+        "url": "self#jumbf=c2pa/urn:uuid:F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4/c2pa.assertions/c2pa.thumbnail.claim.jpeg",
+        "hash": "G5hfJwYeWTlflxOhmfCO9xDAK52aKQ+YbKNhRZeq92c=",
+        "alg": "sha256"
+      },
+      {
+        "url": "self#jumbf=c2pa/urn:uuid:F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4/c2pa.assertions/c2pa.ingredient.v2",
+        "hash": "Yzag4o5jO4xPyfANVtw7ETlbFSWZNfeM78qbSi8Abkk=",
+        "alg": "sha256"
+      }
+    ],
+    "role": ["cawg.licensee"],
+    "delegatedTo": "did:key:0xfeedface",
+    "permittedActions": [
+      "c2pa.transcoded",
+      "c2pa.repackaged",
+      "c2pa.distributed"
+    ],
+    "odrlPolicy": {
+      "@context": "https://www.w3.org/ns/odrl/2/",
+      "uid": "urn:uuid:vp-perm-456",
+      "type": "Offer",
+      "permission": [
+        {
+          "target": "did:key:zDemoLicenseeKey",
+          "action": {
+            "type": "odrl:use"
+          },
+          "constraint": [
+            {
+              "leftOperand": "odrl:dateTime",
+              "operator": "odrl:lteq",
+              "rightOperand": "2026-08-25T00:00:00Z"
+            },
+            {
+              "leftOperand": "odrl:territory",
+              "operator": "odrl:eq",
+              "rightOperand": "US"
+            },
+            {
+              "leftOperand": "odrl:purpose",
+              "operator": "odrl:eq",
+              "rightOperand": "content_distribution"
+            }
+          ]
+        }
+      ],
+      "obligation": [
+        {
+          "target": "did:key:zDemoLicenseeKey",
+          "action": {
+            "type": "odrl:attribute"
+          },
+          "constraint": [
+            {
+              "leftOperand": "odrl:attribution",
+              "operator": "odrl:eq",
+              "rightOperand": "Jane Creator via OriginVault"
+            }
+          ]
+        },
+        {
+          "target": "did:key:zDemoLicenseeKey",
+          "action": {
+            "type": "odrl:report"
+          },
+          "constraint": [
+            {
+              "leftOperand": "odrl:reporting",
+              "operator": "odrl:eq",
+              "rightOperand": "usage_analytics"
+            }
+          ]
+        }
+      ]
+    },
+    "expected_countersigners": [
+      {
+        "id": "did:web:trust-registry.cheqd",
+        "expected_credentials": {
+          "alg": "sha256",
+          "hash": "sha256-trust-registry-credential-hash"
+        }
+      },
+      {
+        "id": "did:web:content-distribution-platform.com",
+        "expected_credentials": {
+          "alg": "sha256",
+          "hash": "sha256-platform-credential-hash"
+        }
+      }
+    ],
+    "nonceBinding": {
+      "nonce": "khY+wzWPo1m5Eiyz5S0PmaoYuC0Xhe9kWpjU1vySk1A=",
+      "salt": "1e1c9780-452d-420c-8c18-6e1b5adc94b8",
+      "hashAlgorithm": "sha256"
+    }
+  },
+  "potentialAction": {
+    "@type": "Action",
+    "actionStatus": "PotentialActionStatus",
+    "agent": {
+      "@type": "Person",
+      "name": "Jane Creator",
+      "identifier": "did:key:zDemoLicenseeKey"
+    },
+    "object": {
+      "@type": "CreativeWork",
+      "name": "Original Content Asset",
+      "description": "Digital content asset with C2PA provenance",
+      "encodingFormat": "image/jpeg",
+      "fileSize": "2048576",
+      "width": "1920",
+      "height": "1080"
+    },
+    "recipient": {
+      "@type": "Organization",
+      "name": "Content Distribution Platform",
+      "identifier": "did:key:0xfeedface"
+    },
+    "result": {
+      "@type": "CreativeWork",
+      "name": "Distributed Content Asset",
+      "description": "Transcoded and distributed version of original content",
+      "isBasedOn": "urn:uuid:F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4"
+    },
+    "startTime": "2025-08-25T00:00:00Z",
+    "endTime": "2026-08-25T00:00:00Z",
+    "location": {
+      "@type": "Place",
+      "addressCountry": "US"
+    }
+  }
+}

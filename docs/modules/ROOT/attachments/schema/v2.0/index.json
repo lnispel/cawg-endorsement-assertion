@@ -1,7 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://cawg.io/schemas/endorsement/2.0-draft/schema.json",
-  "title": "EndorsementAssertionCredential",
+  "$id": "https://cawg.io/schemas/forward-permissions/2.0/schema.json",
+  "title": "ForwardPermissionsCredential",
+  "description": "A Verifiable Credential that grants specific permissions to perform actions on C2PA assets, compatible with CAWG 1.2 identity assertion model",
   "type": "object",
   "properties": {
     "@context": {
@@ -10,14 +11,19 @@
       "default": [
         "https://www.w3.org/ns/credentials/v2",
         "https://schema.org",
-        "https://cawg.io/identity/contexts/endorsement-assertion/v1"
+        "https://cawg.io/contexts/forward-permissions/v2",
+        "https://www.w3.org/ns/odrl/2/"
       ]
     },
     "type": {
       "type": "array",
       "items": { "type": "string" },
       "contains": { "const": "VerifiableCredential" },
-      "minItems": 1
+      "minItems": 2,
+      "allOf": [
+        { "contains": { "const": "VerifiableCredential" } },
+        { "contains": { "const": "ForwardPermissionsCredential" } }
+      ]
     },
     "issuer": {
       "oneOf": [
@@ -25,64 +31,239 @@
         {
           "type": "object",
           "properties": {
-            "id":   { "$ref": "#/$defs/nonEmptyUri" },
-            "name": { "$ref": "#/$defs/nonEmptyString" }
+            "id": { "$ref": "#/$defs/nonEmptyUri" },
+            "name": { "$ref": "#/$defs/nonEmptyString" },
+            "@type": { "type": "string", "enum": ["Person", "Organization"] },
+            "description": { "$ref": "#/$defs/nonEmptyString" },
+            "url": { "$ref": "#/$defs/nonEmptyUri" }
           },
           "required": ["id"]
         }
       ]
     },
-    "validFrom":  { "$ref": "#/$defs/dateTimeString" },
+    "validFrom": { "$ref": "#/$defs/dateTimeString" },
     "validUntil": { "$ref": "#/$defs/dateTimeString" },
     "credentialSubject": {
       "type": "object",
       "properties": {
         "id": { "$ref": "#/$defs/nonEmptyUri" },
-        "c2paAsset": {
+        "@type": { "type": "string", "enum": ["Person", "Organization"] },
+        "name": { "$ref": "#/$defs/nonEmptyString" },
+        "description": { "$ref": "#/$defs/nonEmptyString" },
+        "potentialAction": { "$ref": "#/$defs/potentialAction" },
+        "termsOfUse": {
           "type": "object",
           "properties": {
-            "manifestHash": { "$ref": "#/$defs/nonEmptyString" },
-            "manifestAlg":  { "$ref": "#/$defs/nonEmptyString" },
-            "manifestUrl":  { "$ref": "#/$defs/nonEmptyUri" }
-          },
-          "required": ["manifestHash", "manifestAlg"]
-        },
-        "endorsement": {
-          "type": "object",
-          "properties": {
-            "endorsedActions": {
+            "type": { "type": "string", "const": "C2PAAssetBinding" },
+            "referenced_assertions": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/referencedAssertion" },
+              "minItems": 1
+            },
+            "role": {
               "type": "array",
               "items": { "type": "string" },
               "minItems": 1
             },
-            "endorser":  { "$ref": "#/$defs/actorArray" },
-            "endorsee":  { "$ref": "#/$defs/actorArray" },
-            "constraints": { "type": "string" }
+            "delegatedTo": { "$ref": "#/$defs/nonEmptyUri" },
+            "permittedActions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["c2pa.published", "c2pa.transcoded", "c2pa.repackaged", "c2pa.edited", "c2pa.distributed"]
+              },
+              "minItems": 1
+            },
+            "odrlPolicy": {
+              "type": "object",
+              "properties": {
+                "@context": { "type": "string", "const": "https://www.w3.org/ns/odrl/2/" },
+                "uid": { "$ref": "#/$defs/nonEmptyString" },
+                "type": { "type": "string", "const": "Offer" },
+                "permission": {
+                  "type": "array",
+                  "items": { "$ref": "#/$defs/odrlPermission" }
+                },
+                "prohibition": {
+                  "type": "array",
+                  "items": { "$ref": "#/$defs/odrlProhibition" }
+                },
+                "obligation": {
+                  "type": "array",
+                  "items": { "$ref": "#/$defs/odrlObligation" }
+                }
+              },
+              "required": ["@context", "uid", "type"]
+            },
+            "issuerIdentity": {
+              "type": "object",
+              "properties": {
+                "icacReference": { "$ref": "#/$defs/nonEmptyUri" },
+                "icacHash": { "$ref": "#/$defs/nonEmptyString" },
+                "minimalClaims": {
+                  "type": "array",
+                  "items": { "$ref": "#/$defs/identityClaim" }
+                }
+              },
+              "required": ["icacReference"]
+            },
+            "expected_countersigners": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/expectedCountersigner" }
+            },
+            "nonceBinding": {
+              "type": "object",
+              "properties": {
+                "nonce": { "$ref": "#/$defs/nonEmptyString" },
+                "salt": { "$ref": "#/$defs/nonEmptyString" },
+                "hashAlgorithm": { "type": "string", "default": "sha256" }
+              },
+              "required": ["nonce", "salt"]
+            }
           },
-          "required": ["endorsedActions", "endorser", "endorsee"]
+          "required": ["type", "referenced_assertions", "role"]
         }
       },
-      "required": ["c2paAsset", "endorsement"]
+      "required": ["id", "termsOfUse"]
     }
   },
   "required": ["@context", "type", "issuer", "validFrom", "credentialSubject"],
   "$defs": {
     "nonEmptyString": { "type": "string", "minLength": 1 },
-    "nonEmptyUri":    { "type": "string", "format": "uri", "minLength": 1 },
+    "nonEmptyUri": { "type": "string", "format": "uri", "minLength": 1 },
     "dateTimeString": { "type": "string", "format": "date-time" },
-    "actor": {
+    "referencedAssertion": {
       "type": "object",
       "properties": {
-        "id":   { "$ref": "#/$defs/nonEmptyUri" },
-        "name": { "$ref": "#/$defs/nonEmptyString" },
-        "role": { "$ref": "#/$defs/nonEmptyString" }
+        "url": { "$ref": "#/$defs/nonEmptyUri" },
+        "hash": { "$ref": "#/$defs/nonEmptyString" },
+        "alg": { "type": "string", "default": "sha256" }
       },
-      "required": ["id"]
+      "required": ["url", "hash"]
     },
-    "actorArray": {
-      "type": "array",
-      "items": { "$ref": "#/$defs/actor" },
-      "minItems": 1
+    "expectedCountersigner": {
+      "type": "object",
+      "properties": {
+        "id": { "$ref": "#/$defs/nonEmptyUri" },
+        "expected_credentials": {
+          "type": "object",
+          "properties": {
+            "alg": { "type": "string" },
+            "hash": { "$ref": "#/$defs/nonEmptyString" }
+          },
+          "required": ["alg", "hash"]
+        }
+      },
+      "required": ["id", "expected_credentials"]
+    },
+    "odrlPermission": {
+      "type": "object",
+      "properties": {
+        "target": { "$ref": "#/$defs/nonEmptyUri" },
+        "action": { "$ref": "#/$defs/odrlAction" },
+        "constraint": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/odrlConstraint" }
+        }
+      },
+      "required": ["target", "action"]
+    },
+    "odrlProhibition": {
+      "type": "object",
+      "properties": {
+        "target": { "$ref": "#/$defs/nonEmptyUri" },
+        "action": { "$ref": "#/$defs/odrlAction" },
+        "constraint": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/odrlConstraint" }
+        }
+      },
+      "required": ["target", "action"]
+    },
+    "odrlObligation": {
+      "type": "object",
+      "properties": {
+        "target": { "$ref": "#/$defs/nonEmptyUri" },
+        "action": { "$ref": "#/$defs/odrlAction" },
+        "constraint": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/odrlConstraint" }
+        }
+      },
+      "required": ["target", "action"]
+    },
+    "odrlAction": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string" }
+      },
+      "required": ["type"]
+    },
+    "odrlConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": { "type": "string" },
+        "operator": { "type": "string" },
+        "rightOperand": { "type": "string" }
+      },
+      "required": ["leftOperand", "operator", "rightOperand"]
+    },
+    "identityClaim": {
+      "type": "object",
+      "properties": {
+        "claimType": { "type": "string" },
+        "claimValue": { "type": "string" },
+        "issuer": { "$ref": "#/$defs/nonEmptyUri" }
+      },
+      "required": ["claimType", "claimValue"]
+    },
+    "potentialAction": {
+      "type": "object",
+      "properties": {
+        "@type": { "type": "string", "enum": ["Action"] },
+        "actionStatus": { "type": "string" },
+        "agent": { "$ref": "#/$defs/schemaOrgEntity" },
+        "object": { "$ref": "#/$defs/digitalMediaAsset" },
+        "recipient": { "$ref": "#/$defs/schemaOrgEntity" },
+        "result": { "$ref": "#/$defs/digitalMediaAsset" },
+        "startTime": { "$ref": "#/$defs/dateTimeString" },
+        "endTime": { "$ref": "#/$defs/dateTimeString" },
+        "location": { "$ref": "#/$defs/place" }
+      },
+      "required": ["@type"]
+    },
+    "schemaOrgEntity": {
+      "type": "object",
+      "properties": {
+        "@type": { "type": "string", "enum": ["Person", "Organization"] },
+        "name": { "$ref": "#/$defs/nonEmptyString" },
+        "identifier": { "$ref": "#/$defs/nonEmptyString" },
+        "url": { "$ref": "#/$defs/nonEmptyUri" }
+      },
+      "required": ["@type", "name"]
+    },
+    "digitalMediaAsset": {
+      "type": "object",
+      "properties": {
+        "@type": { "type": "string", "enum": ["CreativeWork", "ImageObject", "VideoObject", "AudioObject", "DigitalDocument"] },
+        "name": { "$ref": "#/$defs/nonEmptyString" },
+        "description": { "$ref": "#/$defs/nonEmptyString" },
+        "encodingFormat": { "type": "string" },
+        "fileSize": { "type": "string" },
+        "width": { "type": "string" },
+        "height": { "type": "string" },
+        "duration": { "type": "string" },
+        "isBasedOn": { "$ref": "#/$defs/nonEmptyString" }
+      },
+      "required": ["@type", "name"]
+    },
+    "place": {
+      "type": "object",
+      "properties": {
+        "@type": { "type": "string", "const": "Place" },
+        "addressCountry": { "type": "string" }
+      },
+      "required": ["@type"]
     }
   }
-}
+} 

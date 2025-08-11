@@ -1,12 +1,12 @@
-= Endorsement Assertion
+= Forward Permissions Credential
 :toc: macro
 :toc-title:
 :sectanchors:
 :sectnums:
 
-An _<<_endorsement,endorsement>>_ is a way of indicating approval for specific actions made on content after it has had a _<<C2PA Manifest>>_ attached. (See xref:_generating_an_endorsement[xrefstyle=full].) The *endorsement assertion* is where an _<<_endorsement,endorsement>>_ from the signer of an ingredient _<<C2PA asset>>_ (known here as an _<<_endorser,endorser>>_) is stored. These _<<_endorsement,endorsements>>_ are typically provided (out-of-band of this specification) by ingredient _<<C2PA asset>>_ signers to actors those signers trust to perform the actions listed in the assertion (known here as _<<_endorsee,endorsees>>_). They are used by a validator when assessing whether the actions of the active _<<C2PA Manifest>>_ are “endorsed” or not. (See xref:_validation[xrefstyle=full].)
+A _<<_forward_permissions_credential,Forward Permissions Credential (FPC)>>_ is a W3C Verifiable Credential that grants specific permissions to perform actions on C2PA assets, backed by the issuer's Identity Claims Aggregation Credential (ICAC). The FPC enables a sophisticated permission delegation system where content creators can grant machine-readable rights to trusted parties while maintaining cryptographic proof of their identity and authority. (See xref:_generating_an_fpc[xrefstyle=full].)
 
-*Version 1.0 Draft 14 April 2025* · xref:_version_history[]
+*Version 2.0 Draft 15 July 2024* · xref:_version_history[]
 
 [#maintainers]
 *Maintainers:*
@@ -24,18 +24,25 @@ _This section is non-normative._
 
 === Overview
 
-_<<_endorsement,Endorsements>>_ are a way of indicating approval of three possible actions (see xref:_permitted_actions[xrefstyle=full]) that could be applied to an _<<C2PA asset>>_ described by a _<<C2PA Manifest>>_ in which the _<<C2PA asset>>_ is used as an ingredient.
+The Forward Permissions Credential (FPC) system establishes a comprehensive identity and permissions framework that enables:
 
-_<<_endorsement,Endorsements>>_ endorse the specific actions (described in xref:_permitted_actions[xrefstyle=full]) that MAY be taken by the _<<_endorsee,endorsee>>_, and are therefore valid for _<<_c2pa_manifest,C2PA Manifests>>_ that use only the specified actions. Actions are only endorsed by the signer of that action’s referenced ingredient (known here as the _<<_endorser,endorser>>_); they cannot be endorsed across more than multiple _<<_c2pa_manifest,C2PA Manifests>>_ in the _<<_c2pa_asset,C2PA asset’s>>_ provenance.
+1. **Identity Claims Aggregation Credential (ICAC)** - Proof of identity/attributes
+2. **Forward Permissions Credential (FPC)** - Proof of permissions granted to others  
+3. **C2PA Manifest** - Links content to identity
+4. **Verifiable Presentation** - Combines ICAC + FPC for verification
+
+This system provides a sophisticated permission delegation mechanism where content creators can grant machine-readable rights to trusted parties while maintaining cryptographic proof of their identity and authority.
 
 === Use case
 
-As one example, an _<<_endorser,endorser>>_ may want to endorse another party, such as a content-distribution network, who will transcode its _<<C2PA asset>>_ as part of a publication workflow. The _<<_endorser,endorser>>_ creates an _<<_endorsement,endorsement>>_ that identifies the transcoder, and conveys the _<<_endorsement,endorsement>>_ to them in some method that is out-of-band from this specification. When the transcoder creates their _<<C2PA asset>>_ containing the ingredient, they include the _<<_endorsement,endorsement>>_ as an *endorsement assertion,* which lets the _<<C2PA Manifest>>_ consumer know that the actions they performed have been endorsed.
+As one example, a content creator with an established ICAC may want to grant permission to a content-distribution network to transcode their C2PA asset as part of a publication workflow. The creator issues an FPC that identifies the licensee, references their ICAC for identity assurance, and includes ODRL policies that define the scope, duration, and terms of the permission. When the transcoder creates their C2PA asset containing the ingredient, they include the FPC as a *forward permissions assertion,* which lets the C2PA Manifest consumer know that the actions they performed have been properly authorized.
 
 == Normative references
 
 * https://c2pa.org/specifications/specifications/2.0/specs/C2PA_Specification.html[C2PA technical specification, version 2.0]
-* https://tools.ietf.org/html/rfc5280[Internet X.509 public key infrastructure certificate] (RFC 5280)
+* https://www.w3.org/TR/vc-data-model/[W3C Verifiable Credentials Data Model]
+* https://www.w3.org/ns/odrl/2/[ODRL 2.2 Ontology]
+* https://www.w3.org/TR/did-core/[Decentralized Identifiers (DIDs)]
 
 == Terms and definitions
 
@@ -49,211 +56,246 @@ NOTE: An organization or group of _actors_ may also be considered an _actor._
 
 A file or stream of data containing _digital content,_ _asset metadata,_ and a _<<C2PA Manifest>>_.
 
-For the purposes of this definition, we will extend the typical definition of “file” to include cloud-native and dynamically-generated data.
+For the purposes of this definition, we will extend the typical definition of "file" to include cloud-native and dynamically-generated data.
 
-IMPORTANT: The definition of “C2PA asset” in this specification differs from the definition of “asset” given in the C2PA technical specification. A “C2PA asset” as defined in _this_ specification MUST contain a _<<C2PA Manifest>>._
+IMPORTANT: The definition of "C2PA asset" in this specification differs from the definition of "asset" given in the C2PA technical specification. A "C2PA asset" as defined in _this_ specification MUST contain a _<<C2PA Manifest>>._
 
 === C2PA Manifest
 
 The set of information about the _provenance_ of a _<<C2PA asset>>_ based on the combination of one or more assertions, a single C2PA claim, and a claim signature.
 
-See link:++https://c2pa.org/specifications/specifications/2.0/specs/C2PA_Specification.html#_manifests++[Section 11, “Manifests,”] of the C2PA technical specification.
+See link:++https://c2pa.org/specifications/specifications/2.0/specs/C2PA_Specification.html#_manifests++[Section 11, "Manifests,"] of the C2PA technical specification.
 
-=== Endorsee
+=== Forward Permissions Credential (FPC)
 
-An _<<_actor,actor>>_ who receives an _<<_endorsement,endorsement>>_ to perform a limited set of actions.
+A W3C Verifiable Credential that grants specific permissions to perform actions on C2PA assets, backed by the issuer's Identity Claims Aggregation Credential (ICAC). The FPC includes ODRL policies that define the scope, duration, and terms of the granted permissions.
 
-=== Endorsement
+=== Identity Claims Aggregation Credential (ICAC)
 
-A signed credential intended to convey approval from an _<<_endorser,endorser>>_ to perform a limited set of actions on _<<_c2pa_asset,C2PA assets>>_ on their behalf. Endorsements are not constrained to specific _<<_c2pa_asset,C2PA assets>>._
+A W3C Verifiable Credential that bundles or references verified claims about an entity (e.g., KYC, socials, endorsements) and is signed to their DID. This provides the identity assurance that backs FPCs.
 
-=== Endorser
+=== Licensee
 
-An _<<_actor,actor>>_ who provides an _<<_endorsement,endorsement>>_ authorizing an _<<_endorsee,endorsee>>_ to perform a limited set of actions on any _<<C2PA asset>>_ signed by the _endorser._
+An _<<_actor,actor>>_ who receives a _<<_forward_permissions_credential,Forward Permissions Credential>>_ to perform a limited set of actions.
 
-== Generating an endorsement
+=== Licensor
 
-=== Endorser workflow
+An _<<_actor,actor>>_ who provides a _<<_forward_permissions_credential,Forward Permissions Credential>>_ authorizing a _<<_licensee,licensee>>_ to perform a limited set of actions on specific _<<C2PA asset>>_ signed by the _licensor._
 
-Any _<<_actor,actor>>_ MAY choose to become an _<<_endorser,endorser>>_ by producing the following outputs:
+[#generating_an_fpc]
+== Generating a Forward Permissions Credential
+
+=== Licensor workflow
+
+Any _<<_actor,actor>>_ with an established ICAC MAY choose to become a _<<_licensor,licensor>>_ by producing the following outputs:
 
 * a _<<C2PA asset>>_ and a corresponding _<<C2PA Manifest>>_ (which MAY be embedded in the _<<_c2pa_asset,C2PA asset>>_)
-* an _<<_endorsement,endorsement>>,_ as defined in xref:_endorsement_cose_payload[xrefstyle=full]
+* a _<<_forward_permissions_credential,Forward Permissions Credential>>,_ as defined in xref:_fpc_schema[xrefstyle=full]
 
-IMPORTANT: An _<<_endorsement,endorsement>>_ does not convey permission to perform these actions on any specific _<<C2PA asset>>._ Therefore, an _<<_endorsement,endorsement>>_ MUST NOT be included in any _<<C2PA Manifest>>_ or _<<C2PA asset>>_ created by the _<<_endorser,endorser>>._ It SHOULD be provided separately to the _<<_endorsee,endorsee>>._
+IMPORTANT: A _<<_forward_permissions_credential,Forward Permissions Credential>>_ MUST reference the licensor's ICAC to provide identity assurance. The FPC SHOULD be provided separately to the _<<_licensee,licensee>>_ and MAY be included in C2PA Manifests as a forward permissions assertion.
 
-The relationship among _<<_endorser,endorser>>_, _<<_endorsee,endorsee>>_, and the _<<_endorser,endorser’s>>_ _<<C2PA Manifest>>_ is represented by the following diagram, which is non-normative:
+The relationship among _<<_licensor,licensor>>_, _<<_licensee,licensee>>_, and the _<<_licensor,licensor's>>_ _<<C2PA Manifest>>_ is represented by the following diagram, which is non-normative:
 
 [mermaid,width=100%]
 ....
 erDiagram
-    er["Endorser"] {
-        x509-cert signingCredential
+    lr["Licensor"] {
+        did decentralizedIdentifier
+        icac identityCredential
     }
-    em["Endorser’s C2PA manifest"] {
+    icac["ICAC"] {
+        verifiedClaims kyc
+        verifiedClaims endorsements
+        verifiedClaims socials
+    }
+    fpc["FPC"] {
+        licensee did
+        permittedActions actions
+        odrlPolicy terms
+        icacReference assurance
+    }
+    cm["C2PA Manifest"] {
         assertions anyAssertions
         cose-sig claimSignature
     }
-    oa["Endorser’s C2PA asset"] {
+    ca["C2PA Asset"] {
         c2pa-manifest manifest
     }
-    e["Endorsement"] {
-        der endorseeCredential
-        date notValidBefore
-        date notValidAfter
-        cose-sig endorsementSignature
-    }
-    ee["Endorsee"] {
-        x509-cert signingCredential
-    }
 
-    er ||--|| em: "creates and signs"
-    er ||--|| e: "creates and signs"
-    em ||--|| oa: "describes"
-    e ||--|| ee: "identifies"
+    lr ||--|| icac: "has"
+    lr ||--|| fpc: "issues"
+    lr ||--|| cm: "creates and signs"
+    icac ||--|| fpc: "backs"
+    cm ||--|| ca: "describes"
+    fpc ||--|| lr: "references"
 ....
 
-=== Endorsee workflow
+=== Licensee workflow
 
-An _<<_endorsee,endorsee>>,_ once in possession of a _<<C2PA asset>>_ and an _<<_endorsement,endorsement>>_ signed by the same _<<_actor,actor>>_ that signed the _<<_c2pa_asset,C2PA asset’s>>_ _<<C2PA Manifest>>,_ MAY choose to perform one or more of the actions permitted in xref:_permitted_actions[xrefstyle=full], and describe those actions in a new _<<C2PA Manifest>>._
+A _<<_licensee,licensee>>,_ once in possession of a _<<C2PA asset>>_ and a _<<_forward_permissions_credential,Forward Permissions Credential>>_ signed by the same _<<_actor,actor>>_ that signed the _<<_c2pa_asset,C2PA asset's>>_ _<<C2PA Manifest>>,_ MAY choose to perform one or more of the actions permitted in xref:_permitted_actions[xrefstyle=full], and describe those actions in a new _<<C2PA Manifest>>._
 
-The _<<_endorseee,endorsee>>_ MAY include the _<<_endorsement,endorsement>>_ by adding an *endorsement assertion* in the new _<<C2PA Manifest>>’s_ assertion store.
+The _<<_licensee,licensee>>_ MAY include the _<<_forward_permissions_credential,Forward Permissions Credential>>_ by adding a *forward permissions assertion* in the new _<<C2PA Manifest>>'s_ assertion store.
 
-Before generating an *endorsement assertion,* the _<<_endorsee,endorsee>>_ MUST ensure that:
+Before generating a *forward permissions assertion,* the _<<_licensee,licensee>>_ MUST ensure that:
 
 * exactly one link:++https://c2pa.org/specifications/specifications/2.0/specs/C2PA_Specification.html#_actions++[`c2pa.actions` assertion] exists in the _<<C2PA Manifest>>,_
 * only the actions listed under xref:_permitted_actions[xrefstyle=full] are present in the actions assertion,
 * exactly one link:++https://c2pa.org/specifications/specifications/2.0/specs/C2PA_Specification.html#_ingredient++[ingredient assertion] is present in the assertion store, and,
-* that ingredient is the one referenced by the actions assertion’s `parameters.ingredient` field.
+* that ingredient is the one referenced by the actions assertion's `parameters.ingredient` field.
 
-The *endorsement assertion* MUST have a label of `cawg.endorsement`. The assertion contents MUST be a `COSE_Sign1_Tagged` structure that is created as defined in xref:_endorsement_cose_payload[xrefstyle=full].
+The *forward permissions assertion* MUST have a label of `cawg.forwardPermissions`. The assertion contents MUST be a `COSE_Sign1_Tagged` structure that contains the FPC.
 
-There MUST NOT be more than one *endorsement assertion* in any _<<C2PA Manifest>>._
+There MUST NOT be more than one *forward permissions assertion* in any _<<C2PA Manifest>>._
 
-The relationship between the _<<_endorser,endorser’s>>_ _<<C2PA asset>>_ and the _<<_endorsee,endorsee’s>>_ _<<C2PA asset>>_ is illustrated by the following diagram, which is non-normative:
+The relationship between the _<<_licensor,licensor's>>_ _<<C2PA asset>>_ and the _<<_licensee,licensee's>>_ _<<C2PA asset>>_ is illustrated by the following diagram, which is non-normative:
 
 [mermaid,width=100%]
 ....
 erDiagram
-    oa["Endorser’s C2PA asset"] {
+    ca["Licensor's C2PA asset"] {
         c2pa-manifest manifest
     }
     aa["Actions assertion"] {
         list actionsPerformed
     }
     ia["Ingredient assertion"] {
-        ref endorsersAsset
+        ref licensorsAsset
     }
-    e["Endorsement"] {
-        any endorseeCredential
-        date notValidBefore
-        date notValidAfter
-        cose-sig endorsementSignature
+    fpc["Forward Permissions Credential"] {
+        licensee did
+        permittedActions actions
+        odrlPolicy terms
+        icacReference assurance
     }
-    ea["Endorsement assertion"] {
-        ref endorsement
+    fpa["Forward permissions assertion"] {
+        ref fpc
     }
-    ee["Endorsee"] {
-        x509-cert signingCredential
+    lee["Licensee"] {
+        did decentralizedIdentifier
     }
-    eas["Endorsee’s C2PA asset"] {
+    leas["Licensee's C2PA asset"] {
         c2pa-manifest manifest
     }
-    eem["Endorsee’s C2PA manifest"] {
+    leem["Licensee's C2PA manifest"] {
         assertion ingredients
         assertion actions
-        assertion endorsement
+        assertion forwardPermissions
         cose-sig claimSignature
     }
 
-    oa ||--|| ia: "referenced by"
-    ee ||--|| eem: "creates and signs"
-    ee ||--|| aa: "creates"
-    e ||--|| ea: "included in"
-    aa ||--|| eem: "included in"
-    ia ||--|| eem: "included in"
-    ea ||--|| eem: "included in"
-    eem ||--|| eas: "describes"
+    ca ||--|| ia: "referenced by"
+    lee ||--|| leem: "creates and signs"
+    lee ||--|| aa: "creates"
+    fpc ||--|| fpa: "included in"
+    aa ||--|| leem: "included in"
+    ia ||--|| leem: "included in"
+    fpa ||--|| leem: "included in"
+    leem ||--|| leas: "describes"
 
 ....
 
+[#permitted_actions]
 === Permitted actions
 
-The link:++https://c2pa.org/specifications/specifications/2.0/specs/C2PA_Specification.html#_actions++[`c2pa.actions` assertion] in a _<<C2PA Manifest>>_ containing an *endorsement assertion* MAY contain any of the following action codes:
+The link:++https://c2pa.org/specifications/specifications/2.0/specs/C2PA_Specification.html#_actions++[`c2pa.actions` assertion] in a _<<C2PA Manifest>>_ containing a *forward permissions assertion* MAY contain any of the following action codes:
 
 * `c2pa.published`
 * `c2pa.transcoded`
 * `c2pa.repackaged`
+* `c2pa.edited`
+* `c2pa.distributed`
 
 The actions assertion MUST NOT contain any other action codes.
 
-=== Endorsement COSE payload
+[#fpc_schema]
+=== FPC Schema
 
-_<<_endorsement,Endorsements>>_ are COSE objects (see link:++https://c2pa.org/specifications/specifications/2.0/specs/C2PA_Specification.html#_digital_signatures++[Section 13.2, “Digital Signatures,” of the C2PA 2.0 Technical Specification]), where the COSE payload is an “endorsement target” data structure encoded as CBOR, as shown below. The `endorseeCredential` field is an object with a single field, labelled according to the type of credential used to sign the _<<_endorsement,endorsement>>._ The label of this field indicates to validators the type of the credential present, so that they know how to decode, parse and validate the credential correctly. The following table details the format of each of the currently specified credential types:
+_<<_forward_permissions_credential,Forward Permissions Credentials>>_ follow the W3C Verifiable Credentials Data Model and are fully compatible with CAWG 1.2 identity assertion model. Key components include:
 
-==== Endorsement credential types
+* **Terms of Use** - C2PAAssetBinding with referenced assertions, roles, and ODRL policies
+* **Credential Subject** - Licensee identification and forward permissions details
+* **Asset binding** - C2PA manifest references with hash verification
+* **Permitted actions** - List of allowed C2PA actions (published, transcoded, repackaged, edited, distributed)
+* **Delegation support** - Optional delegation to other DIDs via `delegatedTo`
+* **Identity hooks** - Expected countersigners for trust validation
+* **mDL compatibility** - Nonce binding for mobile driver's license integration
+* **Issuer identity** - Reference to the licensor's ICAC for identity assurance
+* **Schema.org integration** - Semantic markup for enhanced discoverability and interoperability
 
-[col="2,1,4,4"]
-|===
-|Credential name |CBOR label |Value type |Compares To
+The complete schema is defined in xref:_fpc_schema[xrefstyle=full].
 
-|Reserved
-|0
-|
-|
-
-|Reserved _(deprecated)_
-|1
-|This CBOR label was used in link:https://c2pa.org/specifications/specifications/1.4/specs/C2PA_Specification.html#_endorsement_credential_types[a prior version of the endorsement assertion specification] and should no longer be used.
-|n/a
-
-|X.509 Certificate Hash
-|2
-|A SHA-256 hash of the _endorsee’s_ X.509 certificate chain that will be used for signing the claims of _<<_c2pa_asset,C2PA assets>>_ that this _<<_endorsement,endorsement>>_ is expected to be used with.
-|The value of the credential shall be compared (bitwise identical) to a SHA-256 hash of the entire certificate chain located in the `x5chain` or `33` (integer) COSE header of the active _<<C2PA Manifest>>_ claim signature. (See link:++https://c2pfa.org/specifications/specifications/2.0/specs/C2PA_Specification.html#x509_certificates++[Section 14.6, “X.509 Certificates,” of the C2PA 2.0 Technical Specification].)
-|===
-
-_<<_endorser,Endorsers>>_ SHALL place the credential of the signer they are endorsing (the _<<_endorsee,endorsee>>_) and its type in the `endorseeCredential`. To limit the length of time that an _<<_endorser,endorser>>_ is lending their _<<_endorsement,endorsement>>_ to the _<<_endorsee,endorsee>>,_ the `notValidBefore` and `notValidAfter` fields MUST contain ISO 8601 date times.
-
-The schema for the endorsement target type is defined by the `endorsement-target-map` rule in the following https://datatracker.ietf.org/doc/html/rfc8610[CDDL Definition]:
-
-[source,cddl]
-----
-include::partial$schemas/cddl/endorsement-target.cddl[]
-----
-
-An example endorsement target is shown below:
-
-[source,json]
-----
-include::partial$schemas/cddl/examples/endorsement-target.cbordiag[]
-----
-
-To sign an _<<_endorsement,endorsement>>,_ follow the procedure specified in link:++https://c2pa.org/specifications/specifications/2.0/specs/C2PA_Specification.html#_digital_signatures++[Section 13.2, “Digital Signatures,” of the C2PA 2.0 Technical Specification], using the serialised CBOR `endorsement-target` object as the contents of the payload field. An _<<_endorser,endorser>>_ SHALL NOT include a `x5chain` header and value, as _<<_endorsement,endorsements>>_ are validated in the context of their use as an ingredient, and therefore use the signing credential of that ingredient _<<C2PA Manifest>>._ (See xref:_validation[xrefstyle=full].)
-
-The serialized `COSE_Sign1_Tagged` structure resulting from the digital signature procedure is the _<<_endorsement,endorsement>>_ that MAY be conveyed to the _<<_endorsee,endorsee>>_ identified in the `endorsement-target`, but the process for conveying it is out of scope of this specification.
+Examples are available for both basic FPC credentials and VP-wrapped FPC credentials demonstrating holder-signed permissions.
 
 == Validation
 
-Validation of an *endorsement assertion* SHALL only be attempted if the active _<<C2PA Manifest>>_ first meets a number of conditions:
+Validation of a *forward permissions assertion* SHALL only be attempted if the active _<<C2PA Manifest>>_ first meets a number of conditions:
 
 * There is exactly one link:++https://c2pa.org/specifications/specifications/2.0/specs/C2PA_Specification.html#_actions++[actions assertion] present in the assertion store.
 * There is exactly one link:++https://c2pa.org/specifications/specifications/2.0/specs/C2PA_Specification.html#_ingredient++[ingredient assertion].
-* There is exactly one *endorsement assertion.*
+* There is exactly one *forward permissions assertion.*
 
 For each `action` object in the link:++https://c2pa.org/specifications/specifications/2.0/specs/C2PA_Specification.html#_actions++[actions assertion]:
 
-. Check that the `action` field is set to `c2pa.published`, `c2pa.transcoded`, or `c2pa.repackaged`. If any other action is present, fail the *endorsement assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation.
-. Check the `ingredient` field that is a member of the `parameters` object for the presence of a JUMBF URI. If the JUMBF URI is not present, or cannot be resolved to the related ingredient assertion, fail the *endorsement assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation.
-. Follow the JUMBF URI link in the `ingredient` field to the ingredient assertion. Check that the URI link resolves to the single ingredient assertion in the active _<<C2PA Manifest>>._ If it does not, fail the *endorsement assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation. Check that the `relationship` field is `parentOf`. If it is not, fail the *endorsement assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation.
-. Check the `c2pa_manifest` field in the ingredient assertion for the presence of a hashed URI. If the hashed URI is not present, or cannot be resolved to a _<<C2PA Manifest>>,_ fail the *endorsement assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation.
-. Follow the JUMBF URI link in the `c2pa_manifest` field to the ingredient’s _<<C2PA Manifest>>._ Ensure that this _ingredient_ _<<C2PA Manifest>>_ has been validated according to link:++https://c2pa.org/specifications/specifications/2.0/specs/C2PA_Specification.html#_recursively_validating_integrity_of_ingredients++[Section 15.8, “Recursively validating integrity of ingredients,” of the C2PA 2.0 Technical Specification], but do not skip the establishing of signer credential trust. If it does not validate, fail the *endorsement assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation.
-. Validate the endorsement as described in link:++https://c2pa.org/specifications/specifications/2.0/specs/C2PA_Specification.html#_recursively_validating_integrity_of_ingredients++[Section 15.4, “Validate the signature,” of the C2PA Technical Specification], using the credential of the ingredient _<<C2PA Manifest>>_ signer. If a signing credential is present in the endorsement’s signature’s headers, it shall not be used for validation. If validation fails, fail the *endorsement assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation.
-. Validate the `endorsement-target` payload itself, following the steps below:
-.. Compare the `endorseeCredential` to the SHA-256 hash of the credential of the active _<<C2PA Manifest>>_ signer, according to the table found in xref:_endorsement_credential_types[xrefstyle=full]. If the comparison fails, fail the *endorsement assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation.
-.. If the active _<<C2PA Manifest>>_ is timestamped, then the _time-stamp_ must fall within the endorsement’s validity time range. If it does not, fail the *endorsement assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation.
-.. If the active _<<C2PA Manifest>>_ is not timestamped, then the _time of validation_ must fall within the endorsement’s validity time range. If it does not, fail the *endorsement assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation.
+. Check that the `action` field is set to `c2pa.published`, `c2pa.transcoded`, `c2pa.repackaged`, `c2pa.edited`, or `c2pa.distributed`. If any other action is present, fail the *forward permissions assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation.
+. Check the `ingredient` field that is a member of the `parameters` object for the presence of a JUMBF URI. If the JUMBF URI is not present, or cannot be resolved to the related ingredient assertion, fail the *forward permissions assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation.
+. Follow the JUMBF URI link in the `ingredient` field to the ingredient assertion. Check that the URI link resolves to the single ingredient assertion in the active _<<C2PA Manifest>>._ If it does not, fail the *forward permissions assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation. Check that the `relationship` field is `parentOf`. If it is not, fail the *forward permissions assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation.
+. Check the `c2pa_manifest` field in the ingredient assertion for the presence of a hashed URI. If the hashed URI is not present, or cannot be resolved to a _<<C2PA Manifest>>,_ fail the *forward permissions assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation.
+. Follow the JUMBF URI link in the `c2pa_manifest` field to the ingredient's _<<C2PA Manifest>>._ Ensure that this _ingredient_ _<<C2PA Manifest>>_ has been validated according to link:++https://c2pa.org/specifications/specifications/2.0/specs/C2PA_Specification.html#_recursively_validating_integrity_of_ingredients++[Section 15.8, "Recursively validating integrity of ingredients," of the C2PA 2.0 Technical Specification], but do not skip the establishing of signer credential trust. If it does not validate, fail the *forward permissions assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation.
+. Validate the FPC as a W3C Verifiable Credential according to the VC Data Model specification. If validation fails, fail the *forward permissions assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation.
+. Validate the FPC's ODRL policy according to the ODRL 2.2 specification. If validation fails, fail the *forward permissions assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation.
+. Validate the FPC's reference to the licensor's ICAC. Ensure the ICAC is valid and contains the necessary identity claims. If validation fails, fail the *forward permissions assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation.
+. Validate that the active _<<C2PA Manifest>>_ signer's credential matches the licensee specified in the FPC. If the comparison fails, fail the *forward permissions assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation.
+. If the active _<<C2PA Manifest>>_ is timestamped, then the _time-stamp_ must fall within the FPC's validity time range. If it does not, fail the *forward permissions assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation.
+. If the active _<<C2PA Manifest>>_ is not timestamped, then the _time of validation_ must fall within the FPC's validity time range. If it does not, fail the *forward permissions assertion* validation process for this _<<C2PA Manifest>>_ and do not proceed with further validation.
 
-If all steps above have been completed without failure, the *endorsement assertion* SHOULD be considered valid.
+If all steps above have been completed without failure, the *forward permissions assertion* SHOULD be considered valid.
+
+== Alignment with CAWG Identity Assertions
+
+The Forward Permissions Credential system is designed to work seamlessly with the evolving CAWG Identity Assertion framework. Key alignment points include:
+
+=== C2PAAssetBinding Integration
+
+FPCs use the same `C2PAAssetBinding` structure as identity assertions, enabling:
+
+* **Unified asset binding** - Both identity and permissions reference the same C2PA assertions
+* **Consistent validation** - Same validation rules apply to both credential types
+* **Interoperable workflows** - Identity and permissions can be combined in Verifiable Presentations
+
+=== Verifiable Presentation Support
+
+FPCs can be wrapped in Verifiable Presentations (VPs) to enable:
+
+* **Holder-signed permissions** - Licensees can sign their own permission requests
+* **Multi-credential bundles** - Identity and permission credentials can be combined
+* **Flexible delegation** - Support for complex permission delegation chains
+
+=== Delegation Mechanisms
+
+The FPC system supports delegation through:
+
+* **Direct delegation** - `delegatedTo` field in termsOfUse
+* **VP-based delegation** - Holder can delegate permissions via VP
+* **Chain validation** - Delegation chains are validated according to CAWG rules
+
+=== Verifiable Presentation Support
+
+The FPC system supports wrapping credentials in Verifiable Presentations (VPs) to enable:
+
+* **Holder-signed permissions** - Licensees can sign their own permission requests via VP
+* **Extended permissions** - VP can add additional `termsOfUse` with `C2PAAssetBinding`
+* **Multi-credential bundles** - Multiple FPCs can be combined in a single VP
+* **Delegation workflows** - VP enables complex permission delegation chains
+
+VP examples demonstrate how licensees can extend or modify permissions while maintaining cryptographic proof of their authority.
+
+=== Future Extensions
+
+The FPC system is designed to support future CAWG extensions including:
+
+* **mDL integration** - Mobile driver's license credential support
+* **Claim generator attestations** - Enhanced trust from claim generators
+* **Persistent ID support** - Long-term identity continuity
+* **Schema.org integration** - Enhanced semantic markup for better discoverability and search engine optimization
 
 include::partial$version-history.adoc[]

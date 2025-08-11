@@ -1,0 +1,151 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://schema.org",
+    "https://cawg.io/contexts/forward-permissions/v2",
+    "https://www.w3.org/ns/odrl/2/"
+  ],
+  "type": ["VerifiableCredential", "ForwardPermissionsCredential"],
+  "issuer": {
+    "id": "did:web:originvault.io",
+    "name": "OriginVault"
+  },
+  "validFrom": "2024-01-01T00:00:00Z",
+  "validUntil": "2025-01-01T00:00:00Z",
+  "termsOfUse": {
+    "type": "C2PAAssetBinding",
+    "referenced_assertions": [
+      {
+        "url": "self#jumbf=c2pa/urn:uuid:F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4/c2pa.assertions/c2pa.hash.data",
+        "hash": "U9Gyz05tmpftkoEYP6XYNsMnUbnS/KcktAg2vv7n1n8="
+      },
+      {
+        "url": "self#jumbf=c2pa/urn:uuid:F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4/c2pa.assertions/c2pa.ingredient.v2",
+        "hash": "Yzag4o5jO4xPyfANVtw7ETlbFSWZNfeM78qbSi8Abkk="
+      }
+    ],
+    "role": ["cawg.creator"],
+    "odrlPolicy": {
+      "@context": "https://www.w3.org/ns/odrl/2/",
+      "uid": "https://cawg.io/policies/transcode-permission-001",
+      "type": "Offer",
+      "permission": [
+        {
+          "target": "https://example.com/manifest/123",
+          "action": {
+            "type": "odrl:use"
+          },
+          "constraint": [
+            {
+              "leftOperand": "odrl:dateTime",
+              "operator": "odrl:lteq",
+              "rightOperand": "2025-01-01T00:00:00Z"
+            },
+            {
+              "leftOperand": "odrl:territory",
+              "operator": "odrl:eq",
+              "rightOperand": "US"
+            }
+          ]
+        }
+      ],
+      "obligation": [
+        {
+          "target": "https://example.com/manifest/123",
+          "action": {
+            "type": "odrl:attribute"
+          },
+          "constraint": [
+            {
+              "leftOperand": "odrl:attribution",
+              "operator": "odrl:eq",
+              "rightOperand": "OriginVault"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "credentialSubject": {
+    "id": "did:key:zDemoLicenseeKey",
+    "forwardPermissions": {
+      "licensee": {
+        "did": "did:key:zDemoLicenseeKey",
+        "credentialHash": "sha256:abc123def456...",
+        "credentialType": "x509.sha256"
+      },
+      "assetReference": {
+        "c2paManifestHash": "sha256:manifest123...",
+        "c2paManifestUrl": "https://example.com/manifest/123",
+        "assetId": "urn:uuid:12345678-1234-1234-1234-123456789abc",
+        "relationship": "parentOf"
+      },
+      "permittedActions": [
+        "c2pa.transcoded",
+        "c2pa.repackaged"
+      ],
+      "odrlPolicy": {
+        "@context": "https://www.w3.org/ns/odrl/2/",
+        "uid": "https://cawg.io/policies/transcode-permission-001",
+        "type": "Offer",
+        "permission": [
+          {
+            "target": "https://example.com/manifest/123",
+            "action": {
+              "type": "odrl:use"
+            },
+            "constraint": [
+              {
+                "leftOperand": "odrl:dateTime",
+                "operator": "odrl:lteq",
+                "rightOperand": "2025-01-01T00:00:00Z"
+              },
+              {
+                "leftOperand": "odrl:territory",
+                "operator": "odrl:eq",
+                "rightOperand": "US"
+              }
+            ]
+          }
+        ],
+        "obligation": [
+          {
+            "target": "https://example.com/manifest/123",
+            "action": {
+              "type": "odrl:attribute"
+            },
+            "constraint": [
+              {
+                "leftOperand": "odrl:attribution",
+                "operator": "odrl:eq",
+                "rightOperand": "OriginVault"
+              }
+            ]
+          }
+        ]
+      },
+      "issuerIdentity": {
+        "icacReference": "https://cawg.io/credentials/icac/creator",
+        "icacHash": "sha256-xyz789",
+        "minimalClaims": [
+          {
+            "claimType": "verifiedPublisher",
+            "claimValue": "true",
+            "issuer": "https://trusted-issuer.com"
+          },
+          {
+            "claimType": "kycLevel",
+            "claimValue": "enhanced",
+            "issuer": "https://kyc-provider.com"
+          }
+        ]
+      },
+      "metadata": {
+        "signatureAlg": "ES256",
+        "signedAt": "2024-01-01T12:00:00Z",
+        "revocationUrl": "https://cawg.io/revocation/status-list-2021",
+        "statusList2021": "https://cawg.io/status-list-2021/credential"
+      }
+    }
+  }
+} 

@@ -1,28 +1,72 @@
 {
   "@context": {
     "@protected": true,
-    "cawg":  "https://cawg.io/identity#",
-    "schema":"https://schema.org/",
-    "xsd":   "http://www.w3.org/2001/XMLSchema#",
+    "cawg": "https://cawg.io/identity#",
+    "schema": "https://schema.org/",
+    "odrl": "https://www.w3.org/ns/odrl/2/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
 
-    "c2paAsset":          "cawg:c2paAsset",
-    "manifestHash":       "cawg:manifestHash",
-    "manifestAlg":        "cawg:manifestAlg",
-    "manifestUrl":        "@id",
-
-    "endorsement":        "cawg:endorsement",
-    "endorsedActions":    "cawg:endorsedActions",
-    "constraints":        "cawg:constraints",
-
-    "endorser": {
-      "@id": "cawg:endorser",
+    "ForwardPermissionsCredential": "cawg:ForwardPermissionsCredential",
+    "forwardPermissions": "cawg:forwardPermissions",
+    
+    "licensee": {
+      "@id": "cawg:licensee",
+      "@type": "@id"
+    },
+    "did": "cawg:did",
+    "credentialHash": "cawg:credentialHash",
+    "credentialType": "cawg:credentialType",
+    
+    "assetReference": "cawg:assetReference",
+    "c2paManifestHash": "cawg:c2paManifestHash",
+    "c2paManifestUrl": "cawg:c2paManifestUrl",
+    "assetId": "cawg:assetId",
+    "relationship": "cawg:relationship",
+    
+    "permittedActions": {
+      "@id": "cawg:permittedActions",
       "@container": "@set"
     },
-    "endorsee": {
-      "@id": "cawg:endorsee",
+    
+    "odrlPolicy": "odrl:Policy",
+    "uid": "odrl:uid",
+    "permission": {
+      "@id": "odrl:permission",
       "@container": "@set"
     },
-    "role":   "schema:roleName",
-    "name":   "schema:name"
+    "prohibition": {
+      "@id": "odrl:prohibition", 
+      "@container": "@set"
+    },
+    "obligation": {
+      "@id": "odrl:obligation",
+      "@container": "@set"
+    },
+    "target": "odrl:target",
+    "action": "odrl:action",
+    "constraint": {
+      "@id": "odrl:constraint",
+      "@container": "@set"
+    },
+    "leftOperand": "odrl:leftOperand",
+    "operator": "odrl:operator", 
+    "rightOperand": "odrl:rightOperand",
+    
+    "issuerIdentity": "cawg:issuerIdentity",
+    "icacReference": "cawg:icacReference",
+    "icacHash": "cawg:icacHash",
+    "minimalClaims": {
+      "@id": "cawg:minimalClaims",
+      "@container": "@set"
+    },
+    "identityClaim": "cawg:identityClaim",
+    "claimType": "cawg:claimType",
+    "claimValue": "cawg:claimValue",
+    
+    "metadata": "cawg:metadata",
+    "signatureAlg": "cawg:signatureAlg",
+    "signedAt": "cawg:signedAt",
+    "revocationUrl": "cawg:revocationUrl",
+    "statusList2021": "cawg:statusList2021"
   }
-}
+} 

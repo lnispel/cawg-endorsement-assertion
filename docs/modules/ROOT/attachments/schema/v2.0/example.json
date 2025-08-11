@@ -1,0 +1,97 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://schema.org",
+    "https://cawg.io/contexts/forward-permissions/v2",
+    "https://www.w3.org/ns/odrl/2/"
+  ],
+  "type": ["VerifiableCredential", "ForwardPermissionsCredential"],
+  "issuer": {
+    "id": "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+    "name": "Adobe Creative Cloud"
+  },
+  "validFrom": "2024-01-01T00:00:00Z",
+  "validUntil": "2025-01-01T00:00:00Z",
+  "credentialSubject": {
+    "id": "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+    "forwardPermissions": {
+      "licensee": {
+        "did": "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doL",
+        "credentialHash": "sha256:abc123def456...",
+        "credentialType": "x509.sha256"
+      },
+      "assetReference": {
+        "c2paManifestHash": "sha256:manifest123...",
+        "c2paManifestUrl": "https://example.com/manifest/123",
+        "assetId": "urn:uuid:12345678-1234-1234-1234-123456789abc",
+        "relationship": "parentOf"
+      },
+      "permittedActions": [
+        "c2pa.transcoded",
+        "c2pa.repackaged"
+      ],
+      "odrlPolicy": {
+        "@context": "https://www.w3.org/ns/odrl/2/",
+        "uid": "https://cawg.io/policies/transcode-permission-001",
+        "type": "Offer",
+        "permission": [
+          {
+            "target": "https://example.com/manifest/123",
+            "action": {
+              "type": "odrl:use"
+            },
+            "constraint": [
+              {
+                "leftOperand": "odrl:dateTime",
+                "operator": "odrl:lteq",
+                "rightOperand": "2025-01-01T00:00:00Z"
+              },
+              {
+                "leftOperand": "odrl:territory",
+                "operator": "odrl:eq",
+                "rightOperand": "US"
+              }
+            ]
+          }
+        ],
+        "obligation": [
+          {
+            "target": "https://example.com/manifest/123",
+            "action": {
+              "type": "odrl:attribute"
+            },
+            "constraint": [
+              {
+                "leftOperand": "odrl:attribution",
+                "operator": "odrl:eq",
+                "rightOperand": "Adobe Creative Cloud"
+              }
+            ]
+          }
+        ]
+      },
+      "issuerIdentity": {
+        "icacReference": "https://cawg.io/credentials/icac/adobe-creative-cloud",
+        "icacHash": "sha256:icac123...",
+        "minimalClaims": [
+          {
+            "claimType": "verifiedPublisher",
+            "claimValue": "true",
+            "issuer": "https://trusted-issuer.com"
+          },
+          {
+            "claimType": "kycLevel",
+            "claimValue": "enhanced",
+            "issuer": "https://kyc-provider.com"
+          }
+        ]
+      },
+      "metadata": {
+        "signatureAlg": "ES256",
+        "signedAt": "2024-01-01T12:00:00Z",
+        "revocationUrl": "https://cawg.io/revocation/status-list-2021",
+        "statusList2021": "https://cawg.io/status-list-2021/credential"
+      }
+    }
+  }
+} 

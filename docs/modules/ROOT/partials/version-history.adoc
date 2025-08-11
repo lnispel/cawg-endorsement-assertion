@@ -18,3 +18,11 @@ _This section is non-normative._
 *14 April 2025*
 
 * Transition to DIF draft specification.
+
+*15 July 2024*
+
+* Complete transition from endorsement assertion to Forward Permissions Credential (FPC) system.
+* Introduced Identity Claims Aggregation Credential (ICAC) concept for identity assurance.
+* Added ODRL policy integration for machine-readable permissions.
+* Updated terminology from endorser/endorsee to licensor/licensee.
+* Enhanced validation process to include ICAC verification and ODRL policy validation.

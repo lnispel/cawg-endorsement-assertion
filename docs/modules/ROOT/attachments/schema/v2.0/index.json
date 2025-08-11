@@ -1,7 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://cawg.io/schemas/endorsement/2.0-draft/schema.json",
-  "title": "EndorsementAssertionCredential",
+  "$id": "https://cawg.io/schemas/forward-permissions/2.0/schema.json",
+  "title": "ForwardPermissionsCredential",
+  "description": "A Verifiable Credential that grants specific permissions to perform actions on C2PA assets, backed by the issuer's Identity Claims Aggregation Credential (ICAC)",
   "type": "object",
   "properties": {
     "@context": {
@@ -10,14 +11,19 @@
       "default": [
         "https://www.w3.org/ns/credentials/v2",
         "https://schema.org",
-        "https://cawg.io/identity/contexts/endorsement-assertion/v1"
+        "https://cawg.io/contexts/forward-permissions",
+        "https://www.w3.org/ns/odrl/2/"
       ]
     },
     "type": {
       "type": "array",
       "items": { "type": "string" },
       "contains": { "const": "VerifiableCredential" },
-      "minItems": 1
+      "minItems": 2,
+      "allOf": [
+        { "contains": { "const": "VerifiableCredential" } },
+        { "contains": { "const": "ForwardPermissionsCredential" } }
+      ]
     },
     "issuer": {
       "oneOf": [
@@ -25,64 +31,169 @@
         {
           "type": "object",
           "properties": {
-            "id":   { "$ref": "#/$defs/nonEmptyUri" },
+            "id": { "$ref": "#/$defs/nonEmptyUri" },
             "name": { "$ref": "#/$defs/nonEmptyString" }
           },
           "required": ["id"]
         }
       ]
     },
-    "validFrom":  { "$ref": "#/$defs/dateTimeString" },
+    "validFrom": { "$ref": "#/$defs/dateTimeString" },
     "validUntil": { "$ref": "#/$defs/dateTimeString" },
     "credentialSubject": {
       "type": "object",
       "properties": {
         "id": { "$ref": "#/$defs/nonEmptyUri" },
-        "c2paAsset": {
+        "forwardPermissions": {
           "type": "object",
           "properties": {
-            "manifestHash": { "$ref": "#/$defs/nonEmptyString" },
-            "manifestAlg":  { "$ref": "#/$defs/nonEmptyString" },
-            "manifestUrl":  { "$ref": "#/$defs/nonEmptyUri" }
-          },
-          "required": ["manifestHash", "manifestAlg"]
-        },
-        "endorsement": {
-          "type": "object",
-          "properties": {
-            "endorsedActions": {
+            "licensee": {
+              "type": "object",
+              "properties": {
+                "did": { "$ref": "#/$defs/nonEmptyUri" },
+                "credentialHash": { "$ref": "#/$defs/nonEmptyString" },
+                "credentialType": {
+                  "type": "string",
+                  "enum": ["x509.sha256", "vc.jwt.sha256", "did.key.sha256"]
+                }
+              },
+              "required": ["did", "credentialHash"]
+            },
+            "assetReference": {
+              "type": "object",
+              "properties": {
+                "c2paManifestHash": { "$ref": "#/$defs/nonEmptyString" },
+                "c2paManifestUrl": { "$ref": "#/$defs/nonEmptyUri" },
+                "assetId": { "$ref": "#/$defs/nonEmptyString" },
+                "relationship": {
+                  "type": "string",
+                  "enum": ["parentOf", "derivedFrom"]
+                }
+              },
+              "required": ["c2paManifestHash", "relationship"]
+            },
+            "permittedActions": {
               "type": "array",
-              "items": { "type": "string" },
+              "items": {
+                "type": "string",
+                "enum": ["c2pa.published", "c2pa.transcoded", "c2pa.repackaged", "c2pa.edited", "c2pa.distributed"]
+              },
               "minItems": 1
             },
-            "endorser":  { "$ref": "#/$defs/actorArray" },
-            "endorsee":  { "$ref": "#/$defs/actorArray" },
-            "constraints": { "type": "string" }
+            "odrlPolicy": {
+              "type": "object",
+              "properties": {
+                "@context": { "type": "string", "const": "https://www.w3.org/ns/odrl/2/" },
+                "uid": { "$ref": "#/$defs/nonEmptyString" },
+                "type": { "type": "string", "const": "Offer" },
+                "permission": {
+                  "type": "array",
+                  "items": { "$ref": "#/$defs/odrlPermission" }
+                },
+                "prohibition": {
+                  "type": "array",
+                  "items": { "$ref": "#/$defs/odrlProhibition" }
+                },
+                "obligation": {
+                  "type": "array",
+                  "items": { "$ref": "#/$defs/odrlObligation" }
+                }
+              },
+              "required": ["@context", "uid", "type"]
+            },
+            "issuerIdentity": {
+              "type": "object",
+              "properties": {
+                "icacReference": { "$ref": "#/$defs/nonEmptyUri" },
+                "icacHash": { "$ref": "#/$defs/nonEmptyString" },
+                "minimalClaims": {
+                  "type": "array",
+                  "items": { "$ref": "#/$defs/identityClaim" }
+                }
+              },
+              "required": ["icacReference"]
+            },
+            "metadata": {
+              "type": "object",
+              "properties": {
+                "signatureAlg": { "type": "string" },
+                "signedAt": { "$ref": "#/$defs/dateTimeString" },
+                "revocationUrl": { "$ref": "#/$defs/nonEmptyUri" },
+                "statusList2021": { "$ref": "#/$defs/nonEmptyUri" }
+              }
+            }
           },
-          "required": ["endorsedActions", "endorser", "endorsee"]
+          "required": ["licensee", "assetReference", "permittedActions", "issuerIdentity"]
         }
       },
-      "required": ["c2paAsset", "endorsement"]
+      "required": ["id", "forwardPermissions"]
     }
   },
   "required": ["@context", "type", "issuer", "validFrom", "credentialSubject"],
   "$defs": {
     "nonEmptyString": { "type": "string", "minLength": 1 },
-    "nonEmptyUri":    { "type": "string", "format": "uri", "minLength": 1 },
+    "nonEmptyUri": { "type": "string", "format": "uri", "minLength": 1 },
     "dateTimeString": { "type": "string", "format": "date-time" },
-    "actor": {
+    "odrlPermission": {
       "type": "object",
       "properties": {
-        "id":   { "$ref": "#/$defs/nonEmptyUri" },
-        "name": { "$ref": "#/$defs/nonEmptyString" },
-        "role": { "$ref": "#/$defs/nonEmptyString" }
+        "target": { "$ref": "#/$defs/nonEmptyUri" },
+        "action": { "$ref": "#/$defs/odrlAction" },
+        "constraint": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/odrlConstraint" }
+        }
       },
-      "required": ["id"]
+      "required": ["target", "action"]
     },
-    "actorArray": {
-      "type": "array",
-      "items": { "$ref": "#/$defs/actor" },
-      "minItems": 1
+    "odrlProhibition": {
+      "type": "object",
+      "properties": {
+        "target": { "$ref": "#/$defs/nonEmptyUri" },
+        "action": { "$ref": "#/$defs/odrlAction" },
+        "constraint": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/odrlConstraint" }
+        }
+      },
+      "required": ["target", "action"]
+    },
+    "odrlObligation": {
+      "type": "object",
+      "properties": {
+        "target": { "$ref": "#/$defs/nonEmptyUri" },
+        "action": { "$ref": "#/$defs/odrlAction" },
+        "constraint": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/odrlConstraint" }
+        }
+      },
+      "required": ["target", "action"]
+    },
+    "odrlAction": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string" }
+      },
+      "required": ["type"]
+    },
+    "odrlConstraint": {
+      "type": "object",
+      "properties": {
+        "leftOperand": { "type": "string" },
+        "operator": { "type": "string" },
+        "rightOperand": { "type": "string" }
+      },
+      "required": ["leftOperand", "operator", "rightOperand"]
+    },
+    "identityClaim": {
+      "type": "object",
+      "properties": {
+        "claimType": { "type": "string" },
+        "claimValue": { "type": "string" },
+        "issuer": { "$ref": "#/$defs/nonEmptyUri" }
+      },
+      "required": ["claimType", "claimValue"]
     }
   }
-}
+} 
